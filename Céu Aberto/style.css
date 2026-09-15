@@ -1,0 +1,227 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #eaf4fb;
+  color: #1d2b38;
+  line-height: 1.5;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 3px solid #f4c430;
+  outline-offset: 3px;
+}
+
+.pular-conteudo {
+  position: absolute;
+  left: 16px;
+  top: -48px;
+  padding: 8px 14px;
+  background: #f4c430;
+  color: #1d2b38;
+  font-weight: bold;
+  border-radius: 8px;
+}
+
+.pular-conteudo:focus {
+  top: 12px;
+}
+
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 6vw;
+  background: #fff;
+  border-bottom: 1px solid #d3e4f0;
+}
+
+.marca {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #2d6a93;
+}
+
+.topo nav {
+  display: flex;
+  gap: 16px;
+}
+
+.hero,
+.agora,
+.semana {
+  padding: 32px 6vw 16px;
+}
+
+.selo {
+  margin-bottom: 8px;
+  color: #2d6a93;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  margin-bottom: 16px;
+  font-size: 1.4rem;
+}
+
+.campo-cidade {
+  display: block;
+  margin: 16px 0 8px;
+  color: #5b7384;
+  font-size: 0.85rem;
+}
+
+#cidade {
+  padding: 8px 12px;
+  border: 1px solid #d3e4f0;
+  border-radius: 10px;
+  background: #fff;
+  color: #1d2b38;
+  font-size: 1rem;
+}
+
+.agora-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.agora-cabecalho h2 {
+  margin-bottom: 0;
+}
+
+.unidade-toggle {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid #d3e4f0;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.unidade-toggle button {
+  padding: 8px 14px;
+  border: 0;
+  background: transparent;
+  color: #4a6070;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.unidade-toggle button + button {
+  border-left: 1px solid #d3e4f0;
+}
+
+.unidade-toggle button.ativa {
+  background: #2d6a93;
+  color: #fff;
+}
+
+.agora-painel {
+  background: #fff;
+  border: 1px solid #d3e4f0;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.agora-painel img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.agora-dados {
+  padding: 20px;
+}
+
+.temperatura {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.condicao {
+  margin: 8px 0 20px;
+  color: #4a6070;
+}
+
+.agora-detalhes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.agora-detalhes article {
+  padding: 12px;
+  background: #f4f9fc;
+  border-radius: 12px;
+}
+
+.agora-detalhes h3 {
+  margin-bottom: 4px;
+  color: #5b7384;
+  font-size: 0.85rem;
+}
+
+.lista-dias {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.lista-dias article {
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #d3e4f0;
+  border-radius: 12px;
+}
+
+.lista-dias h3 {
+  margin-bottom: 4px;
+}
+
+.lista-dias p {
+  color: #4a6070;
+  font-size: 0.95rem;
+}
+
+.faixa-temp {
+  margin: 10px 0 6px;
+  color: #1d2b38;
+  font-size: 1.15rem;
+  font-weight: bold;
+}
+
+.rodape {
+  margin-top: 40px;
+  padding: 24px 6vw;
+  background: #2d6a93;
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .agora-detalhes {
+    grid-template-columns: 1fr;
+  }
+}

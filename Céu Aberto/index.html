@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tempo em Florianópolis hoje | Céu Aberto</title>
+    <meta name="description"
+        content="Tempo em Florianópolis hoje: previsão do tempo atualizada e dos próximos 7 dias.">
+
+    <meta property="og:title" content="Tempo em Florianópolis hoje | Céu Aberto">
+    <meta property="og:description" content="Previsão do tempo atualizada e dos próximos 7 dias.">
+    <meta property="og:image" content="floripa.jpg">
+    <meta property="og:type" content="website">
+    <script src="script.js" defer></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+    <header class="topo">
+        <a class="marca" href="#inicio">Céu Aberto</a>
+        <nav aria-label="Navegação principal">
+            <a href="#agora">Agora</a>
+            <a href="#semana">7 dias</a>
+        </nav>
+    </header>
+
+    <main id="conteudo">
+        <section class="hero" id="inicio">
+            <p class="selo" id="selo">Floripa</p>
+            <h1 id="titulo">Tempo em Florianópolis hoje</h1>
+
+            <label class="campo-cidade" for="cidade">Cidade</label>
+            <select id="cidade">
+                <option value="florianopolis">Florianópolis</option>
+                <option value="sao-paulo">São Paulo</option>
+                <option value="rio-de-janeiro">Rio de Janeiro</option>
+            </select>
+        </section>
+
+        <section class="agora" id="agora">
+            <div class="agora-cabecalho">
+                <h2>Agora</h2>
+                <div class="unidade-toggle">
+                    <button type="button" id="botao-celsius" class="ativa">°C</button>
+                    <button type="button" id="botao-fahrenheit">°F</button>
+                </div>
+            </div>
+
+            <div class="agora-painel">
+                <figure>
+                    <img src="floripa.jpg" alt="Ponte Hercílio Luz em Florianópolis, com o céu ao fundo">
+                </figure>
+
+                <div class="agora-dados">
+                    <p class="temperatura" id="temperatura">-- °C</p>
+                    <p class="condicao" id="condicao">Carregando...</p>
+
+                    <div class="agora-detalhes">
+                        <article>
+                            <h3>Sensação térmica</h3>
+                            <p id="sensacao">-- °C</p>
+                        </article>
+                        <article>
+                            <h3>Umidade</h3>
+                            <p id="umidade">--%</p>
+                        </article>
+                        <article>
+                            <h3>Vento</h3>
+                            <p id="vento">-- km/h</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="semana" id="semana">
+            <h2>Próximos 7 dias</h2>
+
+            <!-- O container abaixo receberá os cards gerados dinamicamente via JS -->
+            <div class="lista-dias" id="lista-previsao"></div>
+        </section>
+    </main>
+
+    <footer class="rodape">
+        <p>Céu Aberto — o tempo da sua cidade.</p>
+    </footer>
+
+</body>
+
+</html>
