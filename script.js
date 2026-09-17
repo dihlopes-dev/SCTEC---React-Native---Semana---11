@@ -2,150 +2,260 @@ const botaoCelsius = document.querySelector("#botao-celsius");
 const botaoFahrenheit = document.querySelector("#botao-fahrenheit");
 const cidadeSelect = document.querySelector("#cidade");
 const imagemCidade = document.querySelector(".agora-painel figure img");
+const botaoLocalizacao = document.querySelector("#botao-localizacao");
+const status = document.querySelector("#status");
 const selo = document.querySelector("#selo");
 const titulo = document.querySelector("#titulo");
 const temperatura = document.querySelector("#temperatura");
+const condicao = document.querySelector("#condicao");
 const sensacao = document.querySelector("#sensacao");
 const umidade = document.querySelector("#umidade");
 const vento = document.querySelector("#vento");
-const listaPrevisao = document.querySelector("#lista-previsao");
+
+const idsPrevisao = [
+  "temp-hoje",
+  "temp-segunda",
+  "temp-terca",
+  "temp-quarta",
+  "temp-quinta",
+  "temp-sexta",
+  "temp-sabado",
+];
 
 const cidades = [
-  { 
-    value: "florianopolis", 
-    nome: "Florianópolis", 
-    selo: "Floripa", 
-    lat: -27.5969, 
-    lon: -48.5495,
+  {
+    value: "florianopolis",
+    nome: "Florianópolis",
+    selo: "Floripa",
+    latitude: -27.5954,
+    longitude: -48.548,
     imagem: "floripa.jpg",
     alt: "Ponte Hercílio Luz em Florianópolis, com o céu ao fundo"
   },
-  { 
-    value: "sao-paulo", 
-    nome: "São Paulo", 
-    selo: "SP", 
-    lat: -23.5505, 
-    lon: -46.6333,
+  {
+    value: "sao-paulo",
+    nome: "São Paulo",
+    selo: "SP",
+    latitude: -23.5505,
+    longitude: -46.6333,
     imagem: "sao-paulo.jpg",
     alt: "Horizonte com edifícios na cidade de São Paulo"
   },
-  { 
-    value: "rio-de-janeiro", 
-    nome: "Rio de Janeiro", 
-    selo: "Rio", 
-    lat: -22.9068, 
-    lon: -43.1729,
+  {
+    value: "rio-de-janeiro",
+    nome: "Rio de Janeiro",
+    selo: "Rio",
+    latitude: -22.9068,
+    longitude: -43.1729,
     imagem: "rio-de-janeiro.jpg",
     alt: "Vista panorâmica da cidade do Rio de Janeiro"
-  }
+  },
 ];
 
+let climaAtual;
+
+dayjs.locale("pt-br");
+
 function paraFahrenheit(celsius) {
-  return Math.round((celsius * 9 / 5) + 32);
+  return Math.round((celsius * 9) / 5 + 32);
 }
 
-// Formata "2026-09-14" para o nome do dia em português ("Hoje", "Terça", "Quarta", etc.)
-function formatarDiaDaSemana(dataString, index) {
-  if (index === 0) return "Hoje";
+function traduzirCondicao(codigo) {
+  const condicoes = {
+    0: "Céu limpo",
+    1: "Predominantemente limpo",
+    2: "Parcialmente nublado",
+    3: "Nublado",
+    45: "Neblina",
+    48: "Neblina",
+    51: "Chuvisco",
+    53: "Chuvisco",
+    55: "Chuvisco",
+    61: "Chuva fraca",
+    63: "Chuva",
+    65: "Chuva forte",
+    80: "Pancadas de chuva",
+    81: "Pancadas de chuva",
+    82: "Pancadas de chuva forte",
+    95: "Trovoada",
+    96: "Trovoada",
+    99: "Trovoada",
+  };
 
-  const data = new Date(`${dataString}T00:00:00`);
-  const nomeDia = new Intl.DateTimeFormat("pt-BR", { weekday: "long" }).format(data);
-
-  // Pega o primeiro nome (ex: "terça-feira" -> "Terça") e coloca inicial maiúscula
-  const diaFormatado = nomeDia.split("-")[0];
-  return diaFormatado.charAt(0).toUpperCase() + diaFormatado.slice(1);
+  return condicoes[codigo] || "Condição desconhecida";
 }
 
-async function buscarClimaAPI(latitude, longitude) {
+function formatarData(iso) {
+  return dayjs(`${iso}T12:00:00`).format("D [de] MMMM");
+}
+
+function nomeDoDia(iso, indice) {
+  if (indice === 0) {
+    return "Hoje";
+  }
+
+  const nome = dayjs(`${iso}T12:00:00`).format("dddd");
+  return nome.charAt(0).toUpperCase() + nome.slice(1);
+}
+
+async function buscarTempo(cidade) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${cidade.latitude}&longitude=${cidade.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America/Sao_Paulo&forecast_days=7`;
+
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`;
-    
-    const resposta = await fetch(url);
-    const dados = await resposta.json();
+    const response = await fetch(url);
 
-    return {
-      temperatura: Math.round(dados.current.temperature_2m),
-      sensacao: Math.round(dados.current.apparent_temperature),
-      umidade: `${dados.current.relative_humidity_2m}%`,
-      vento: `${Math.round(dados.current.wind_speed_10m)} km/h`,
-      previsao: dados.daily.time.slice(0, 7).map((dataStr, index) => ({
-        diaNome: formatarDiaDaSemana(dataStr, index),
-        max: Math.round(dados.daily.temperature_2m_max[index]),
-        min: Math.round(dados.daily.temperature_2m_min[index])
-      }))
-    };
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status}`);
+    }
+
+    const dados = await response.json();
+    return dados;
   } catch (erro) {
-    console.error("Erro ao buscar dados do clima:", erro);
-    return null;
+    console.error("Falhou:", erro);
   }
 }
 
-async function atualizarTela(chaveCidade, unidade) {
-  const cidadeInfo = cidades.find((item) => item.value === chaveCidade);
-  if (!cidadeInfo) return;
+function atualizarTela(cidade, clima, unidade) {
+  const temperaturaAgora = Math.round(clima.current.temperature_2m);
+  const sensacaoTermica = Math.round(clima.current.apparent_temperature);
 
-  if (imagemCidade) {
-    imagemCidade.src = cidadeInfo.imagem;
-    imagemCidade.alt = cidadeInfo.alt;
-  }
+  imagemCidade.src = cidade.imagem;
+  imagemCidade.alt = cidade.alt;
 
-  const dadosClima = await buscarClimaAPI(cidadeInfo.lat, cidadeInfo.lon);
-  if (!dadosClima) return;
 
-  const ehFahrenheit = unidade === "fahrenheit";
+  selo.textContent = cidade.selo;
+  titulo.textContent = `Tempo em ${cidade.nome} hoje`;
+  condicao.textContent = traduzirCondicao(clima.current.weather_code);
+  umidade.textContent = `${clima.current.relative_humidity_2m}%`;
+  vento.textContent = `${Math.round(clima.current.wind_speed_10m)} km/h`;
 
-  // Atualiza botões
-  botaoFahrenheit.classList.toggle("ativa", ehFahrenheit);
-  botaoCelsius.classList.toggle("ativa", !ehFahrenheit);
-
-  // Atualiza dados no topo
-  selo.textContent = cidadeInfo.selo;
-  titulo.textContent = `Tempo em ${cidadeInfo.nome} hoje`;
-  umidade.textContent = dadosClima.umidade;
-  vento.textContent = dadosClima.vento;
-
-  if (ehFahrenheit) {
-    temperatura.textContent = `${paraFahrenheit(dadosClima.temperatura)} °F`;
-    sensacao.textContent = `${paraFahrenheit(dadosClima.sensacao)} °F`;
+  if (unidade === "fahrenheit") {
+    temperatura.textContent = `${paraFahrenheit(temperaturaAgora)} °F`;
+    sensacao.textContent = `${paraFahrenheit(sensacaoTermica)} °F`;
+    botaoCelsius.classList.remove("ativa");
+    botaoFahrenheit.classList.add("ativa");
   } else {
-    temperatura.textContent = `${dadosClima.temperatura} °C`;
-    sensacao.textContent = `${dadosClima.sensacao} °C`;
+    temperatura.textContent = `${temperaturaAgora} °C`;
+    sensacao.textContent = `${sensacaoTermica} °C`;
+    botaoFahrenheit.classList.remove("ativa");
+    botaoCelsius.classList.add("ativa");
   }
 
-  // Gera dinamicamente os cards de previsão
-  listaPrevisao.innerHTML = dadosClima.previsao.map((dia) => {
-    const max = ehFahrenheit ? paraFahrenheit(dia.max) : dia.max;
-    const min = ehFahrenheit ? paraFahrenheit(dia.min) : dia.min;
+  idsPrevisao.forEach((id, indice) => {
+    const elemento = document.querySelector(`#${id}`);
+    const artigo = elemento.closest("article");
+    const dataIso = clima.daily.time[indice];
+    const max = Math.round(clima.daily.temperature_2m_max[indice]);
+    const min = Math.round(clima.daily.temperature_2m_min[indice]);
 
-    return `
-      <div class="card-dia">
-        <span class="nome-dia">${dia.diaNome}</span>
-        <span class="faixa-temp">${max}° / ${min}°</span>
-      </div>
-    `;
-  }).join("");
+    if (unidade === "fahrenheit") {
+      elemento.textContent = `${paraFahrenheit(max)}° / ${paraFahrenheit(min)}°`;
+    } else {
+      elemento.textContent = `${max}° / ${min}°`;
+    }
+
+    elemento.nextElementSibling.textContent = traduzirCondicao(
+      clima.daily.weather_code[indice],
+    );
+    artigo.querySelector("h3").textContent = nomeDoDia(dataIso, indice);
+
+    const time = artigo.querySelector("time");
+    time.dateTime = dataIso;
+    time.textContent = formatarData(dataIso);
+  });
 }
 
-// Event Listeners
+function mostrarStatus(texto) {
+  status.textContent = texto;
+}
+
+function distanciaAte(cidade, latitude, longitude) {
+  // Quanto maior o número, mais longe. Não precisa de fórmula de GPS:
+  // só comparamos a diferença de latitude + longitude.
+  return Math.abs(cidade.latitude - latitude) + Math.abs(cidade.longitude - longitude);
+}
+
+function cidadeMaisProxima(latitude, longitude) {
+  // Começa na primeira cidade da lista e troca se achar outra mais perto.
+  let maisProxima = cidades[0];
+
+  for (let i = 1; i < cidades.length; i++) {
+    const cidade = cidades[i];
+
+    if (distanciaAte(cidade, latitude, longitude) < distanciaAte(maisProxima, latitude, longitude)) {
+      maisProxima = cidade;
+    }
+  }
+
+  return maisProxima;
+}
+
+async function carregarCidade(chaveCidade) {
+  const cidade = cidades.find((item) => item.value === chaveCidade);
+  const unidade = localStorage.getItem("unidadeTemperatura") || "celsius";
+
+  mostrarStatus("Carregando...");
+  climaAtual = await buscarTempo(cidade);
+  mostrarStatus("");
+
+  if (climaAtual) {
+    atualizarTela(cidade, climaAtual, unidade);
+  } else {
+    mostrarStatus("Não foi possível carregar o clima.");
+  }
+}
+
+function usarMinhaLocalizacao() {
+  if (!navigator.geolocation) {
+    mostrarStatus("Seu navegador não tem geolocalização.");
+    return;
+  }
+
+  mostrarStatus("Buscando sua localização...");
+
+  navigator.geolocation.getCurrentPosition(
+    (posicao) => {
+      const cidade = cidadeMaisProxima(
+        posicao.coords.latitude,
+        posicao.coords.longitude,
+      );
+
+      cidadeSelect.value = cidade.value;
+      localStorage.setItem("cidade", cidade.value);
+      carregarCidade(cidade.value);
+    },
+    () => {
+      mostrarStatus("Não foi possível obter a localização.");
+    },
+  );
+}
+
 botaoCelsius.addEventListener("click", () => {
   localStorage.setItem("unidadeTemperatura", "celsius");
-  atualizarTela(cidadeSelect.value, "celsius");
+
+  if (climaAtual) {
+    const cidade = cidades.find((item) => item.value === cidadeSelect.value);
+    atualizarTela(cidade, climaAtual, "celsius");
+  }
 });
 
 botaoFahrenheit.addEventListener("click", () => {
   localStorage.setItem("unidadeTemperatura", "fahrenheit");
-  atualizarTela(cidadeSelect.value, "fahrenheit");
+
+  if (climaAtual) {
+    const cidade = cidades.find((item) => item.value === cidadeSelect.value);
+    atualizarTela(cidade, climaAtual, "fahrenheit");
+  }
 });
 
 cidadeSelect.addEventListener("change", () => {
   localStorage.setItem("cidade", cidadeSelect.value);
-  const unidadeSalva = localStorage.getItem("unidadeTemperatura") || "celsius";
-  atualizarTela(cidadeSelect.value, unidadeSalva);
+  carregarCidade(cidadeSelect.value);
 });
 
-// Inicialização
+botaoLocalizacao.addEventListener("click", usarMinhaLocalizacao);
+
 const cidadeSalva = localStorage.getItem("cidade") || "florianopolis";
-const unidadeSalva = localStorage.getItem("unidadeTemperatura") || "celsius";
 
 cidadeSelect.value = cidadeSalva;
-atualizarTela(cidadeSalva, unidadeSalva);
+carregarCidade(cidadeSalva);

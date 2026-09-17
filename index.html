@@ -6,12 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tempo em Florianópolis hoje | Céu Aberto</title>
     <meta name="description"
-        content="Tempo em Florianópolis hoje: previsão do tempo atualizada e dos próximos 7 dias.">
+        content="Tempo em Florianópolis hoje: 23 °C, céu parcialmente nublado. Previsão dos próximos 7 dias.">
 
     <meta property="og:title" content="Tempo em Florianópolis hoje | Céu Aberto">
-    <meta property="og:description" content="Previsão do tempo atualizada e dos próximos 7 dias.">
+    <meta property="og:description" content="23 °C e céu parcialmente nublado. Previsão dos próximos 7 dias.">
     <meta property="og:image" content="floripa.jpg">
     <meta property="og:type" content="website">
+
+   
+    <script src="node_modules/dayjs/dayjs.min.js"></script>
+    <script src="node_modules/dayjs/locale/pt-br.js"></script>
     <script src="script.js" defer></script>
 
     <link rel="stylesheet" href="style.css">
@@ -34,11 +38,15 @@
             <h1 id="titulo">Tempo em Florianópolis hoje</h1>
 
             <label class="campo-cidade" for="cidade">Cidade</label>
-            <select id="cidade">
-                <option value="florianopolis">Florianópolis</option>
-                <option value="sao-paulo">São Paulo</option>
-                <option value="rio-de-janeiro">Rio de Janeiro</option>
-            </select>
+            <div class="campo-cidade-acoes">
+                <select id="cidade">
+                    <option value="florianopolis">Florianópolis</option>
+                    <option value="sao-paulo">São Paulo</option>
+                    <option value="rio-de-janeiro">Rio de Janeiro</option>
+                </select>
+                <button type="button" id="botao-localizacao">Usar minha localização</button>
+            </div>
+            <p id="status" aria-live="polite"></p>
         </section>
 
         <section class="agora" id="agora">
@@ -56,21 +64,21 @@
                 </figure>
 
                 <div class="agora-dados">
-                    <p class="temperatura" id="temperatura">-- °C</p>
-                    <p class="condicao" id="condicao">Carregando...</p>
+                    <p class="temperatura" id="temperatura">23 °C</p>
+                    <p class="condicao" id="condicao">Parcialmente nublado</p>
 
                     <div class="agora-detalhes">
                         <article>
                             <h3>Sensação térmica</h3>
-                            <p id="sensacao">-- °C</p>
+                            <p id="sensacao">24 °C</p>
                         </article>
                         <article>
                             <h3>Umidade</h3>
-                            <p id="umidade">--%</p>
+                            <p id="umidade">61%</p>
                         </article>
                         <article>
                             <h3>Vento</h3>
-                            <p id="vento">-- km/h</p>
+                            <p id="vento">12 km/h</p>
                         </article>
                     </div>
                 </div>
@@ -80,8 +88,56 @@
         <section class="semana" id="semana">
             <h2>Próximos 7 dias</h2>
 
-            <!-- O container abaixo receberá os cards gerados dinamicamente via JS -->
-            <div class="lista-dias" id="lista-previsao"></div>
+            <div class="lista-dias">
+                <article>
+                    <h3>Hoje</h3>
+                    <p><time datetime="2026-09-06">6 de setembro</time></p>
+                    <p class="faixa-temp" id="temp-hoje">26° / 16°</p>
+                    <p>Parcialmente nublado</p>
+                </article>
+
+                <article>
+                    <h3>Segunda-feira</h3>
+                    <p><time datetime="2026-09-07">7 de setembro</time></p>
+                    <p class="faixa-temp" id="temp-segunda">27° / 17°</p>
+                    <p>Predominantemente limpo</p>
+                </article>
+
+                <article>
+                    <h3>Terça-feira</h3>
+                    <p><time datetime="2026-09-08">8 de setembro</time></p>
+                    <p class="faixa-temp" id="temp-terca">24° / 16°</p>
+                    <p>Nublado</p>
+                </article>
+
+                <article>
+                    <h3>Quarta-feira</h3>
+                    <p><time datetime="2026-09-09">9 de setembro</time></p>
+                    <p class="faixa-temp" id="temp-quarta">22° / 15°</p>
+                    <p>Chuva fraca</p>
+                </article>
+
+                <article>
+                    <h3>Quinta-feira</h3>
+                    <p><time datetime="2026-09-10">10 de setembro</time></p>
+                    <p class="faixa-temp" id="temp-quinta">25° / 16°</p>
+                    <p>Parcialmente nublado</p>
+                </article>
+
+                <article>
+                    <h3>Sexta-feira</h3>
+                    <p><time datetime="2026-09-11">11 de setembro</time></p>
+                    <p class="faixa-temp" id="temp-sexta">28° / 17°</p>
+                    <p>Céu limpo</p>
+                </article>
+
+                <article>
+                    <h3>Sábado</h3>
+                    <p><time datetime="2026-09-12">12 de setembro</time></p>
+                    <p class="faixa-temp" id="temp-sabado">29° / 18°</p>
+                    <p>Predominantemente limpo</p>
+                </article>
+            </div>
         </section>
     </main>
 

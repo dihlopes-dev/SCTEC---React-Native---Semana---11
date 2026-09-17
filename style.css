@@ -90,13 +90,32 @@ h2 {
   font-size: 0.85rem;
 }
 
-#cidade {
+.campo-cidade-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+#cidade,
+#botao-localizacao {
   padding: 8px 12px;
   border: 1px solid #d3e4f0;
   border-radius: 10px;
   background: #fff;
   color: #1d2b38;
   font-size: 1rem;
+}
+
+#botao-localizacao {
+  cursor: pointer;
+}
+
+#status {
+  min-height: 1.4em;
+  margin-top: 8px;
+  color: #5b7384;
+  font-size: 0.9rem;
 }
 
 .agora-cabecalho {
