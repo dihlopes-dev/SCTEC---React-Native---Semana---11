@@ -183,6 +183,9 @@ h2 {
 .condicao {
   margin: 8px 0 20px;
   color: #4a6070;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .agora-detalhes {
@@ -230,6 +233,17 @@ h2 {
   color: #1d2b38;
   font-size: 1.15rem;
   font-weight: bold;
+}
+
+.condicao-dia {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icone-tempo {
+  font-size: 1.3em;
+  line-height: 1;
 }
 
 .rodape {

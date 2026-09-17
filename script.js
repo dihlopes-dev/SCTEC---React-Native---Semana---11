@@ -7,19 +7,20 @@ const status = document.querySelector("#status");
 const selo = document.querySelector("#selo");
 const titulo = document.querySelector("#titulo");
 const temperatura = document.querySelector("#temperatura");
-const condicao = document.querySelector("#condicao");
+const iconeCondicao = document.querySelector("#icone-condicao");
+const textoCondicao = document.querySelector("#texto-condicao");
 const sensacao = document.querySelector("#sensacao");
 const umidade = document.querySelector("#umidade");
 const vento = document.querySelector("#vento");
 
-const idsPrevisao = [
-  "temp-hoje",
-  "temp-segunda",
-  "temp-terca",
-  "temp-quarta",
-  "temp-quinta",
-  "temp-sexta",
-  "temp-sabado",
+const sufixosPrevisao = [
+  "hoje",
+  "segunda",
+  "terca",
+  "quarta",
+  "quinta",
+  "sexta",
+  "sabado",
 ];
 
 const cidades = [
@@ -94,6 +95,31 @@ function traduzirCondicao(codigo) {
   return condicoes[codigo] || "Condição desconhecida";
 }
 
+function obterIconeClima(codigo) {
+  const icones = {
+    0: "☀️",   // Céu limpo
+    1: "☀️",   // Predominantemente limpo
+    2: "⛅",   // Parcialmente nublado
+    3: "☁️",   // Nublado
+    45: "🌫️",  // Neblina
+    48: "🌫️",  // Neblina
+    51: "🌦️",  // Chuvisco
+    53: "🌦️",  // Chuvisco
+    55: "🌦️",  // Chuvisco
+    61: "🌧️",  // Chuva fraca
+    63: "🌧️",  // Chuva
+    65: "🌧️",  // Chuva forte
+    80: "🌧️",  // Pancadas de chuva
+    81: "🌧️",  // Pancadas de chuva
+    82: "⛈️",  // Pancadas de chuva forte
+    95: "⛈️",  // Trovoada
+    96: "⛈️",  // Trovoada
+    99: "⛈️",  // Trovoada
+  };
+
+  return icones[codigo] || "❓";
+}
+
 function formatarData(iso) {
   return dayjs(`${iso}T12:00:00`).format("D [de] MMMM");
 }
@@ -131,10 +157,12 @@ function atualizarTela(cidade, clima, unidade) {
   imagemCidade.src = cidade.imagem;
   imagemCidade.alt = cidade.alt;
 
-
   selo.textContent = cidade.selo;
   titulo.textContent = `Tempo em ${cidade.nome} hoje`;
-  condicao.textContent = traduzirCondicao(clima.current.weather_code);
+
+  iconeCondicao.textContent = obterIconeClima(clima.current.weather_code);
+  textoCondicao.textContent = traduzirCondicao(clima.current.weather_code);
+
   umidade.textContent = `${clima.current.relative_humidity_2m}%`;
   vento.textContent = `${Math.round(clima.current.wind_speed_10m)} km/h`;
 
@@ -150,22 +178,25 @@ function atualizarTela(cidade, clima, unidade) {
     botaoCelsius.classList.add("ativa");
   }
 
-  idsPrevisao.forEach((id, indice) => {
-    const elemento = document.querySelector(`#${id}`);
-    const artigo = elemento.closest("article");
+  sufixosPrevisao.forEach((sufixo, indice) => {
+    const elementoTemp = document.querySelector(`#temp-${sufixo}`);
+    const elementoIcone = document.querySelector(`#icone-${sufixo}`);
+    const elementoTexto = document.querySelector(`#texto-${sufixo}`);
+    const artigo = elementoTemp.closest("article");
+
     const dataIso = clima.daily.time[indice];
     const max = Math.round(clima.daily.temperature_2m_max[indice]);
     const min = Math.round(clima.daily.temperature_2m_min[indice]);
+    const codigo = clima.daily.weather_code[indice];
 
     if (unidade === "fahrenheit") {
-      elemento.textContent = `${paraFahrenheit(max)}° / ${paraFahrenheit(min)}°`;
+      elementoTemp.textContent = `${paraFahrenheit(max)}° / ${paraFahrenheit(min)}°`;
     } else {
-      elemento.textContent = `${max}° / ${min}°`;
+      elementoTemp.textContent = `${max}° / ${min}°`;
     }
 
-    elemento.nextElementSibling.textContent = traduzirCondicao(
-      clima.daily.weather_code[indice],
-    );
+    elementoIcone.textContent = obterIconeClima(codigo);
+    elementoTexto.textContent = traduzirCondicao(codigo);
     artigo.querySelector("h3").textContent = nomeDoDia(dataIso, indice);
 
     const time = artigo.querySelector("time");
