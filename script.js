@@ -50,6 +50,15 @@ const cidades = [
     imagem: "rio-de-janeiro.jpg",
     alt: "Vista panorâmica da cidade do Rio de Janeiro"
   },
+  {
+    value: "blumenau",
+    nome: "Blumenau",
+    selo: "Blumenau",
+    latitude: -26.9194,
+    longitude: -49.0661,
+    imagem: "blumenau.jpeg",
+    alt: "Vista da cidade de Blumenau, em Santa Catarina"
+  },
 ];
 
 let climaAtual;
